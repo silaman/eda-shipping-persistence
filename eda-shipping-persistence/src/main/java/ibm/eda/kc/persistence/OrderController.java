@@ -22,7 +22,7 @@ public class EdaRepoController
     private final Logger log = LoggerFactory.getLogger(EdaRepoController.class);
 
     @Autowired
-    EdaMysqlRepository edaRepository;
+    OrderRepository edaRepository;
 
     //retrieve all Orders
     @GetMapping("/orders")
@@ -49,10 +49,10 @@ public class EdaRepoController
 
     //retrieve order by id
     @GetMapping("/order/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("id") String id)
+    public ResponseEntity<Order> getOrderById(@PathVariable("id") Long id)
     {
         log.info("...in getOrderById()");
-        Optional<Order> order = Optional.ofNullable(edaRepository.findByOrderId(id));
+        Optional<Order> order = Optional.ofNullable(edaRepository.findById(id));
         if (order.isPresent())
         {
             log.info("Found this order: \n" +order);
@@ -89,7 +89,6 @@ public class EdaRepoController
     {
         return new Order(
                 order.getVoyageId(),
-                order.getQuantity(),
                 buildAddress(order.getPickupAddress()),
                 order.getPickupDate(),
                 buildAddress(order.getDestinationAddress()),
@@ -112,10 +111,10 @@ public class EdaRepoController
 
     //update a Order by id
     @PutMapping("/order/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable("id") String id, @RequestBody Order order)
+    public ResponseEntity<Order> updateOrder(@PathVariable("id") Long id, @RequestBody Order order)
     {
         log.info("...in updateOrder(). Updating this order:\n" +order);
-        Optional<Order> targetOrder = Optional.ofNullable(edaRepository.findByOrderId(id));
+        Optional<Order> targetOrder = Optional.ofNullable(edaRepository.findById(id));
         if (targetOrder.isPresent())
         {
             return new ResponseEntity<>(edaRepository.save(initOrder(order)), HttpStatus.OK);
